@@ -1,0 +1,16 @@
+<% include ../header.ejs %>
+    <form action="" method="post">
+        <table class="table table-bordered">
+            <tr>
+                <th>제품명</th>
+                <td><input type="text" name="name" class="form-control" value="<%=contact.name%>"/></td>
+            </tr>
+            <tr>
+                <th>설명</th>
+                <td><input type="text" name="description" class="form-control" value="<%=contact.description%>"/></td>
+            </tr>
+        </table>
+        <button class="btn btn-primary">작성하기</button>
+    </form>
+
+<% include ../footer.ejs %>

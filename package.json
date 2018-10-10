@@ -1,0 +1,22 @@
+{
+  "name": "camp10",
+  "version": "1.0.0",
+  "description": "shoppingmall",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "dev": "nodemon app.js"
+  },
+  "author": "sunsoo",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "mongodb": "^3.1.6",
+    "mongoose": "^4.11.2",
+    "mongoose-plugin-autoinc": "^1.1.9",
+    "morgan": "^1.9.1",
+    "path": "^0.12.7"
+  }
+}
