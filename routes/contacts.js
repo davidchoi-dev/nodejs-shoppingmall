@@ -23,6 +23,8 @@ router.get('/list/write', function(req,res){
 router.post('/list/write', function(req,res){
     var contact = new ContactsModel({
         name : req.body.name,
+        phone : req.body.phone,
+        address : req.body.address,
         description : req.body.description,
     });
     contact.save(function(err){
@@ -48,6 +50,8 @@ router.post('/list/edit/:id', function(req, res){
     //넣을 변수 값을 셋팅한다
     var query = {
         name : req.body.name,
+        phone : req.body.phone,
+        address : req.body.address,
         description : req.body.description,
     };
 

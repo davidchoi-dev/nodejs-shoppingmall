@@ -2,8 +2,9 @@
 
     <table class="table table-bordered table-hover">
         <tr>
-            <th>제목</th>
-            <th>작성일</th>
+            <th>성명</th>
+            <th>전화번호</th>
+            <th>주소</th>
             <th>작성일</th>
             <th>삭제</th>
         </tr>
@@ -13,10 +14,13 @@
                 <a href="/contacts/list/detail/<%=contact.id%>"><%=contact.name%></a>
             </td>
             <td>
-                <%=contact.getDate.year%>-<%=contact.getDate.month%>-<%=contact.getDate.day%>
+                <%=contact.phone%>
             </td>
             <td>
-                <%=contact.created_at%>
+                <%=contact.address%>
+            </td>
+            <td>
+                <%=contact.getDate.year%>-<%=contact.getDate.month%>-<%=contact.getDate.day%>
             </td>
             <td>
                 <a href="/contacts/list/delete/<%=contact.id%>" class="btn btn-danger" onclick="return confirm('삭제하시겠습니까?')">삭제</a>

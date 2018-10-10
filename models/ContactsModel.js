@@ -4,7 +4,9 @@ var { autoIncrement } = require('mongoose-plugin-autoinc');
 
 // 생성될 필드명을 정한다.
 var ContactsSchema = new Schema({
-    name : String, // 제품명
+    name : String, // 성명
+    phone : String, // 전화
+    address : String, // 주소
     description : String, // 설명
     created_at : { // 작성일
         type : Date,
