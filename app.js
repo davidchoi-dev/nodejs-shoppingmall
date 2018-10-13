@@ -32,6 +32,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+//업로드 path 추가
+app.use('/uploads', express.static('uploads'));
+
 app.get( '/', function(req,res){
     res.send('first app!!!');
 });

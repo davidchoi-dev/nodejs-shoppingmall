@@ -5,16 +5,27 @@
             <%=product.name%>
         </div>
         <div class="panel-body">
-            <div style="padding-bottom: 10px">
+
+            <div>
                 작성일 : <%=product.getDate.year%>-<%=product.getDate.month%>-<%=product.getDate.day%>
             </div>
+
+            <% if(product.thumbnail){%>
+            <div>
+                <img src="/uploads/<%=product.thumbnail%>" style="max-width: 100%"/>
+            </div>
+            <% } %>
+
             <div>
                 가격 : <%=product.price%>원
             </div>
+
             <div>
                 설명 : <%=product.description%>
             </div>
+
             <hr>
+
             <!-- 댓글영역  -->
             <div id="comment_area">
                 <% comments.forEach( function(comment){ %>
