@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 
 var admin = require('./routes/admin');
 var contacts = require('./routes/contacts');
+var accounts = require('./routes/accounts');
 
 var app = express();
 
@@ -32,8 +33,32 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+//flash  메시지 관련
+var flash = require('connect-flash');
+ 
+//passport 로그인 관련
+var passport = require('passport');
+var session = require('express-session');
+
 //업로드 path 추가
 app.use('/uploads', express.static('uploads'));
+
+//session 관련 셋팅
+app.use(session({
+    secret: 'fastcampus',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      maxAge: 2000 * 60 * 60 //지속시간 2시간
+    }
+}));
+
+//passport 적용
+app.use(passport.initialize());
+app.use(passport.session());
+
+//플래시 메시지 관련
+app.use(flash());
 
 app.get( '/', function(req,res){
     res.send('first app!!!');
@@ -41,6 +66,7 @@ app.get( '/', function(req,res){
 
 app.use( '/admin', admin );
 app.use( '/contacts', contacts );
+app.use( '/accounts', accounts );
 
 app.listen( port, function(){
     console.log('Express listening on port', port);
