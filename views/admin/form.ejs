@@ -1,6 +1,6 @@
 <% include ../header.ejs %>
 
-    <form action="" method="post" enctype="multipart/form-data">
+    <form id="editForm" action="" method="post" enctype="multipart/form-data">
         <input type="hidden" name="_csrf" value="<%=csrfToken%>">
         <table class="table table-bordered">
             <tr>
@@ -22,11 +22,55 @@
             </tr>
             <tr>
                 <th>설명</th>
-                <td><input type="text" name="description" class="form-control" value="<%=product.description%>"></td>
+                <td>
+                    <textarea name="description" class="form-control" id="summernote"><%-product.description%></textarea>
+                </td>
             </tr>
         </table>
         <button class="btn btn-primary">작성하기</button>
         <a href="/admin/products" class="btn btn-default">목록으로</a>
     </form>
+
+<!-- 스타일관련 -->
+<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.6/summernote.css" rel="stylesheet">
+<!-- 자바스크립트관련 -->
+<script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.6/summernote.js"></script>
+<!-- 한글관련 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.6/lang/summernote-ko-KR.min.js"></script>
+
+<script>
+$(document).ready(function(){
+
+    $('#editForm').submit(function(){
+        $('input[name=files]').remove();
+    });
+
+    $('#summernote').summernote({
+        lang: 'ko-KR',
+        height: 300,
+        callbacks : {
+            onImageUpload: function(files) {
+                sendFile(files[0]);
+            }
+        }
+    });
+    function sendFile(file, editor, welEditable) {
+        data = new FormData();
+        data.append("thumbnail", file);
+        $.ajax({
+            data: data,
+            type: "POST",
+            url: '/admin/products/ajax_summernote/',
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(url) {
+                $('#summernote').summernote("insertImage", url);
+            }
+        });
+    }
+
+});
+</script>
 
 <% include ../footer.ejs %>

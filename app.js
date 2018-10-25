@@ -8,7 +8,8 @@ var admin = require('./routes/admin');
 var contacts = require('./routes/contacts');
 var accounts = require('./routes/accounts');
 var auth = require('./routes/auth');
-var home = require('./routes/home.js');
+var home = require('./routes/home');
+var chat = require('./routes/chat');
 
 var app = express();
 
@@ -46,14 +47,32 @@ var session = require('express-session');
 app.use('/uploads', express.static('uploads'));
 
 //session 관련 셋팅
-app.use(session({
+// app.use(session({
+//     secret: 'fastcampus',
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: {
+//       maxAge: 2000 * 60 * 60 //지속시간 2시간
+//     }
+// }));
+
+//session 관련 셋팅
+var connectMongo = require('connect-mongo');
+var MongoStore = connectMongo(session);
+
+var sessionMiddleWare = session({
     secret: 'fastcampus',
     resave: false,
     saveUninitialized: true,
     cookie: {
       maxAge: 2000 * 60 * 60 //지속시간 2시간
-    }
-}));
+    },
+    store: new MongoStore({
+        mongooseConnection: mongoose.connection,
+        ttl: 14 * 24 * 60 * 60
+    })
+});
+app.use(sessionMiddleWare);
 
 //passport 적용
 app.use(passport.initialize());
@@ -80,7 +99,20 @@ app.use( '/admin', admin );
 app.use( '/contacts', contacts );
 app.use( '/accounts', accounts );
 app.use( '/auth', auth );
+app.use( '/chat', chat );
 
-app.listen( port, function(){
+var server = app.listen( port, function(){
     console.log('Express listening on port', port);
 });
+
+// var listen = require('socket.io');
+// var io = listen(server);
+// require('./libs/socketConnection')(io);
+
+var listen = require('socket.io');
+var io = listen(server);
+//socket io passport 접근하기 위한 미들웨어 적용
+io.use(function(socket, next){
+  sessionMiddleWare(socket.request, socket.request.res, next);
+});
+require('./libs/socketConnection')(io);

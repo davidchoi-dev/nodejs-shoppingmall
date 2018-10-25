@@ -3,6 +3,8 @@ var router = express.Router();
 var ProductsModel = require('../models/ProductsModel');
 var CommentsModel = require('../models/CommentsModel');
 var loginRequired = require('../libs/loginRequired');
+var co = require('co');
+var paginate = require('express-paginate');
 
 //csrf
 var csrf = require('csurf');
@@ -29,12 +31,30 @@ router.get( '/', function(req,res){
     res.redirect('/admin/products');
 });
 
-router.get('/products', function(req,res){
-    ProductsModel.find(function(err,products){
-        res.render( 'admin/products' , 
-            { products : products } // DB에서 받은 products를 products변수명으로 내보냄
-        );
+// router.get('/products', function(req,res){
+//     ProductsModel.find(function(err,products){
+//         res.render( 'admin/products' , 
+//             { products : products } // DB에서 받은 products를 products변수명으로 내보냄
+//         );
+//     });
+// });
+
+router.get('/products', paginate.middleware(5, 100), async (req,res) => { // 5개씩 100페이지
+
+    const [ results, itemCount ] = await Promise.all([
+        ProductsModel.find().sort('-created_at').limit(req.query.limit).skip(req.skip).exec(),
+        ProductsModel.count({})
+    ]);
+    const pageCount = Math.ceil(itemCount / req.query.limit);
+    
+    const pages = paginate.getArrayPages(req)( 10 , pageCount, req.query.page); // 10개씩 페이지 블락
+
+    res.render('admin/products', { 
+        products : results , 
+        pages: pages,
+        pageCount : pageCount,
     });
+
 });
 
 router.get('/products/write', loginRequired, csrfProtection , function(req,res){
@@ -87,14 +107,49 @@ router.post('/products/write', loginRequired, upload.single('thumbnail'), csrfPr
 //     });
 // });
 
-router.get('/products/detail/:id' , function(req, res){
-    //url 에서 변수 값을 받아올떈 req.params.id 로 받아온다
-    ProductsModel.findOne( { 'id' :  req.params.id } , function(err ,product){
-        //제품정보를 받고 그안에서 댓글을 받아온다.
-        CommentsModel.find({ product_id : req.params.id } , function(err, comments){
-            res.render('admin/productsDetail', { product: product , comments : comments });
-        });        
-    });
+// router.get('/products/detail/:id' , function(req, res){
+//     //url 에서 변수 값을 받아올떈 req.params.id 로 받아온다
+//     ProductsModel.findOne( { 'id' :  req.params.id } , function(err ,product){
+//         //제품정보를 받고 그안에서 댓글을 받아온다.
+//         CommentsModel.find({ product_id : req.params.id } , function(err, comments){
+//             res.render('admin/productsDetail', { product: product , comments : comments });
+//         });        
+//     });
+// });
+
+// router.get('/products/detail/:id' , function(req, res){
+//     var getData = co(function* (){
+//         return {
+//             product : yield ProductsModel.findOne( { 'id' :  req.params.id }).exec(),
+//             comments : yield CommentsModel.find( { 'product_id' :  req.params.id }).exec()
+//         };
+//     });
+//     getData.then( function(result){
+//         res.render('admin/productsDetail', { product: result.product , comments : result.comments });
+//     }); 
+// });
+
+// router.get('/products/detail/:id' , function(req, res){
+//     var getData = async ()=>{
+//         return {
+//             product : await ProductsModel.findOne( { 'id' :  req.params.id }).exec(),
+//             comments : await CommentsModel.find( { 'product_id' :  req.params.id }).exec()
+//         };
+//     };
+//     getData().then( function(result){
+//         res.render('admin/productsDetail', { product: result.product , comments : result.comments });
+//     }); 
+// });
+
+router.get('/products/detail/:id' , async(req, res) => {
+    try{
+        var product = await ProductsModel.findOne( { 'id' :  req.params.id }).exec();
+        var comments = await CommentsModel.find( { 'product_id' :  req.params.id }).exec();
+        
+        res.render('admin/productsDetail', { product: product , comments : comments });
+    }catch(e){
+        res.send(e);
+    }
 });
 
 router.get('/products/edit/:id', loginRequired, csrfProtection, function(req, res){
@@ -160,6 +215,10 @@ router.post('/products/ajax_comment/delete', function(req, res){
     CommentsModel.remove({ id : req.body.comment_id } , function(err){
         res.json({ message : "success" });
     });
+});
+
+router.post('/products/ajax_summernote', loginRequired, upload.single('thumbnail'), function(req,res){
+    res.send( '/uploads/' + req.file.filename);
 });
 
 module.exports = router;

@@ -26,11 +26,9 @@
                 </div> 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-9">
                     <ul class="nav navbar-nav">
-                        <li class="active">
-                            <a href="/">Home</a>
-                        </li>
                         <li><a href="/admin/products">ADMIN</a></li>
                         <% if(isLogin){%>
+                            <li><a href="/chat">CHAT</a></li>
                             <li><a href="/accounts/logout" onclick="return confirm('로그아웃 하시겠습니까?')">LOGOUT</a></li>
                         <%}else{%>
                             <li><a href="/accounts/join">JOIN</a></li> 
