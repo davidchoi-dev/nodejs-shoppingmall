@@ -10,6 +10,8 @@ var accounts = require('./routes/accounts');
 var auth = require('./routes/auth');
 var home = require('./routes/home');
 var chat = require('./routes/chat');
+var products = require('./routes/products');
+var cart = require('./routes/cart');
 
 var app = express();
 
@@ -100,6 +102,15 @@ app.use( '/contacts', contacts );
 app.use( '/accounts', accounts );
 app.use( '/auth', auth );
 app.use( '/chat', chat );
+app.use('/products', products);
+
+//업로드 path 추가
+app.use('/uploads', express.static('uploads'));
+
+//static path 추가
+app.use('/static', express.static('static'));
+
+app.use('/cart', cart);
 
 var server = app.listen( port, function(){
     console.log('Express listening on port', port);
